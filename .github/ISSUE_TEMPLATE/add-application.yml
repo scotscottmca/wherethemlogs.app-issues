@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         Paste paths **verbatim**. Environment variables stay unexpanded, and
-        anything identifying gets redacted — `C:\Users\<username>\...` is as
+        anything identifying gets redacted - `C:\Users\<username>\...` is as
         useful to us as the real thing.
 
   - type: input
@@ -117,7 +117,7 @@ body:
     id: notes
     attributes:
       label: Anything else
-      description: Conditions the path depends on — a flag that has to be set, a version it changed in, a folder that only appears after a crash.
+      description: Conditions the path depends on - a flag that has to be set, a version it changed in, a folder that only appears after a crash.
 
   - type: checkboxes
     id: privacy
