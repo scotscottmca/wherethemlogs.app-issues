@@ -3,7 +3,7 @@ description: A path in the index is wrong, stale, or missing a variant
 title: "Correction: "
 labels: ["correction"]
 body:
-  - type: input
+  - type: textarea
     id: app
     attributes:
       label: Application

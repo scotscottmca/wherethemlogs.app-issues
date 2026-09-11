@@ -10,7 +10,7 @@ body:
         anything identifying gets redacted - `C:\Users\<username>\...` is as
         useful to us as the real thing.
 
-  - type: input
+  - type: textarea
     id: app
     attributes:
       label: Application
@@ -19,7 +19,7 @@ body:
     validations:
       required: true
 
-  - type: input
+  - type: textarea
     id: vendor
     attributes:
       label: Vendor
@@ -27,28 +27,30 @@ body:
     validations:
       required: true
 
-  - type: input
+  - type: textarea
     id: aliases
     attributes:
       label: Also known as
       description: Comma separated. What else might someone type?
       placeholder: vscode, code
 
-  - type: input
+  - type: textarea
     id: variant
     attributes:
       label: Variant
       description: Only if the app ships in more than one flavour that logs to different places.
       placeholder: Classic (v1)
 
-  - type: checkboxes
+  - type: dropdown
     id: platforms
     attributes:
       label: Platform
+      description: Pick every platform the paths below cover.
+      multiple: true
       options:
-        - label: Windows
-        - label: macOS
-        - label: Linux
+        - Windows
+        - macOS
+        - Linux
 
   - type: textarea
     id: paths
@@ -63,35 +65,38 @@ body:
     validations:
       required: true
 
-  - type: checkboxes
+  - type: dropdown
     id: installer
     attributes:
       label: Installer type
-      description: Which deployments do these paths hold true for?
+      description: Which deployments do these paths hold true for? Pick as many as apply.
+      multiple: true
       options:
-        - label: msi
-        - label: exe
-        - label: msix
-        - label: appx
-        - label: pkg
-        - label: dmg
-        - label: mas
-        - label: deb
-        - label: rpm
-        - label: snap
-        - label: flatpak
-        - label: appimage
-        - label: Not sure
+        - msi
+        - exe
+        - msix
+        - appx
+        - pkg
+        - dmg
+        - mas
+        - deb
+        - rpm
+        - snap
+        - flatpak
+        - appimage
+        - Not sure
 
-  - type: checkboxes
+  - type: dropdown
     id: architecture
     attributes:
       label: Architecture
+      description: Pick as many as apply.
+      multiple: true
       options:
-        - label: x86
-        - label: x64
-        - label: arm64
-        - label: Not sure
+        - x86
+        - x64
+        - arm64
+        - Not sure
 
   - type: dropdown
     id: scope

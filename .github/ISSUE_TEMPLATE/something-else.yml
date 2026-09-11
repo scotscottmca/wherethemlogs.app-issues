@@ -10,14 +10,14 @@ body:
     validations:
       required: true
 
-  - type: input
+  - type: textarea
     id: where
     attributes:
       label: Where
       description: The page, or the search you ran.
       placeholder: /search?q=teams&platform=windows
 
-  - type: input
+  - type: textarea
     id: browser
     attributes:
       label: Browser and OS
