@@ -45,8 +45,11 @@ body:
     attributes:
       value: |
         **Log paths.** One per line, in the box for its platform. To say what a
-        path holds, follow it with ` | ` and a few words. Leave a box empty if
-        the app does not run there. At least one path is needed.
+        path holds, follow it with ` | ` and a few words. Leave a platform empty
+        if the app does not run there. At least one path is needed.
+
+        Under each box, tick the installer types those paths hold true for.
+        Leave them all unticked if you are not sure.
 
   - type: textarea
     id: windows
@@ -56,6 +59,16 @@ body:
       placeholder: |
         %APPDATA%\Code\logs\ | Session logs
 
+  - type: checkboxes
+    id: windows-installer
+    attributes:
+      label: Windows installer type
+      options:
+        - label: msi
+        - label: exe
+        - label: msix
+        - label: appx
+
   - type: textarea
     id: macos
     attributes:
@@ -63,6 +76,15 @@ body:
       render: text
       placeholder: |
         ~/Library/Application Support/Code/logs/ | Session logs
+
+  - type: checkboxes
+    id: macos-installer
+    attributes:
+      label: macOS installer type
+      options:
+        - label: pkg
+        - label: dmg
+        - label: mas
 
   - type: textarea
     id: linux
@@ -72,26 +94,16 @@ body:
       placeholder: |
         ~/.config/Code/logs/ | Session logs
 
-  - type: dropdown
-    id: installer
+  - type: checkboxes
+    id: linux-installer
     attributes:
-      label: Installer type
-      description: Which deployments do these paths hold true for? Pick as many as apply.
-      multiple: true
+      label: Linux installer type
       options:
-        - msi
-        - exe
-        - msix
-        - appx
-        - pkg
-        - dmg
-        - mas
-        - deb
-        - rpm
-        - snap
-        - flatpak
-        - appimage
-        - Not sure
+        - label: deb
+        - label: rpm
+        - label: snap
+        - label: flatpak
+        - label: appimage
 
   - type: checkboxes
     id: architecture
@@ -104,17 +116,16 @@ body:
         - label: arm64
         - label: Not sure
 
-  - type: dropdown
+  - type: checkboxes
     id: scope
     attributes:
       label: Scope
+      description: Tick one.
       options:
-        - per-user
-        - per-machine
-        - system
-        - Not sure
-    validations:
-      required: true
+        - label: per-user
+        - label: per-machine
+        - label: system
+        - label: Not sure
 
   - type: textarea
     id: verification

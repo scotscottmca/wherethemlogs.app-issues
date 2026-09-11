@@ -3,13 +3,8 @@
 // Self-check: node .github/scripts/issue-to-import.cjs
 
 const MARKER = "<!-- import-file -->";
-const PLATFORMS = { windows: "Windows log paths", macos: "macOS log paths", linux: "Linux log paths" };
-/** The installer types each platform ships. Architectures go on every platform's paths. */
-const INSTALLERS = {
-  windows: ["msi", "exe", "msix", "appx"],
-  macos: ["pkg", "dmg", "mas"],
-  linux: ["deb", "rpm", "snap", "flatpak", "appimage"],
-};
+/** Each platform has a "<Name> log paths" box and "<Name> installer type" checkboxes. */
+const PLATFORMS = { windows: "Windows", macos: "macOS", linux: "Linux" };
 
 /** The form's answers by label. GitHub renders each one as "### Label", then the answer. */
 function answers(body) {
@@ -26,17 +21,20 @@ function answers(body) {
 function build(body) {
   const a = answers(body);
   const one = (label) => (a[label] ?? "").trim();
-  const sure = (x) => x && x !== "Not sure";
+  /** The options ticked in a checkboxes field, less "Not sure". */
+  const ticked = (label) =>
+    [...one(label).matchAll(/^- \[x\] (.+)$/gim)].map((m) => m[1].trim()).filter((x) => x !== "Not sure");
 
-  const installers = one("Installer type").split(",").map((t) => t.trim().toLowerCase());
-  const architectures = [...one("Architecture").matchAll(/^- \[x\] (.+)$/gim)].map((m) => m[1].trim()).filter(sure);
-  const scope = sure(one("Scope")) ? one("Scope") : undefined;
+  const architectures = ticked("Architecture");
+  // A path has one scope, so it only counts when exactly one box is ticked.
+  const scopes = ticked("Scope");
+  const scope = scopes.length === 1 ? scopes[0] : undefined;
   const variant = one("Variant") || undefined;
 
   const logs = [];
-  for (const [os, label] of Object.entries(PLATFORMS)) {
-    const types = [...installers.filter((t) => INSTALLERS[os].includes(t)), ...architectures];
-    for (const line of one(label).split("\n")) {
+  for (const [os, name] of Object.entries(PLATFORMS)) {
+    const types = [...ticked(`${name} installer type`), ...architectures];
+    for (const line of one(`${name} log paths`).split("\n")) {
       // The last " | " - a path can hold a bare "|", as in com.microsoft.<Word|Excel>.
       const cut = line.lastIndexOf(" | ");
       const path = (cut < 0 ? line : line.slice(0, cut)).trim();
@@ -97,11 +95,13 @@ if (require.main === module) {
     "### Also known as", "", "vscode, code", "",
     "### Variant", "", "_No response_", "",
     "### Windows log paths", "", "```text", "%APPDATA%\\Code\\logs\\ | Session logs", "", "```", "",
+    "### Windows installer type", "", "- [X] msi", "- [ ] exe", "- [ ] msix", "- [ ] appx", "",
     "### macOS log paths", "", "```text", "~/Library/Containers/com.microsoft.<Word|Excel>/Logs/", "```", "",
+    "### macOS installer type", "", "- [ ] pkg", "- [X] dmg", "- [ ] mas", "",
     "### Linux log paths", "", "_No response_", "",
-    "### Installer type", "", "msi, dmg, Not sure", "",
+    "### Linux installer type", "", "- [X] deb", "- [ ] rpm", "- [ ] snap", "- [ ] flatpak", "- [ ] appimage", "",
     "### Architecture", "", "- [X] x64", "- [ ] arm64", "- [ ] Not sure", "",
-    "### Scope", "", "per-user", "",
+    "### Scope", "", "- [X] per-user", "- [ ] per-machine", "- [ ] system", "- [ ] Not sure", "",
     "### How did you verify this?", "", "My machine, and https://code.visualstudio.com/docs.", "",
     "### Anything else", "", "_No response_", "",
     "### Before you submit", "", "- [X] I have redacted hostnames, usernames, tenant identifiers and customer names.",
@@ -121,6 +121,8 @@ if (require.main === module) {
       }],
     }],
   });
+  const twoScopes = build(body.replace("- [ ] per-machine", "- [X] per-machine")).file;
+  assert.strictEqual(twoScopes.vendors[0].apps[0].logs[0].scope, undefined);
   assert.deepStrictEqual(build(body.replace("\r\nMicrosoft\r\n", "\r\n_No response_\r\n")).missing, ["the vendor"]);
   assert.deepStrictEqual(
     build(body.replace(/```text[\s\S]*?```/g, "_No response_")).missing,
