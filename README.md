@@ -1,6 +1,6 @@
 # Where Them Logs App - requests and corrections
 
-This repository is the issue tracker for **[Where Them Logs App](https://ca-wtla-prod.proudgrass-36ed8d55.westeurope.azurecontainerapps.io)**,
+This repository is the issue tracker for **[Where Them Logs App](https://wherethemlogs.app)**,
 a searchable index of application log file locations across Windows, macOS and
 Linux.
 
