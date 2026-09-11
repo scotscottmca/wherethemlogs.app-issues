@@ -41,16 +41,15 @@ body:
       description: Only if the app ships in more than one flavour that logs to different places.
       placeholder: Classic (v1)
 
-  - type: dropdown
+  - type: checkboxes
     id: platforms
     attributes:
       label: Platform
-      description: Pick every platform the paths below cover.
-      multiple: true
+      description: Tick every platform the paths below cover.
       options:
-        - Windows
-        - macOS
-        - Linux
+        - label: Windows
+        - label: macOS
+        - label: Linux
 
   - type: textarea
     id: paths
@@ -86,17 +85,16 @@ body:
         - appimage
         - Not sure
 
-  - type: dropdown
+  - type: checkboxes
     id: architecture
     attributes:
       label: Architecture
-      description: Pick as many as apply.
-      multiple: true
+      description: Tick as many as apply.
       options:
-        - x86
-        - x64
-        - arm64
-        - Not sure
+        - label: x86
+        - label: x64
+        - label: arm64
+        - label: Not sure
 
   - type: dropdown
     id: scope
