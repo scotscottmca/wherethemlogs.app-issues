@@ -41,28 +41,36 @@ body:
       description: Only if the app ships in more than one flavour that logs to different places.
       placeholder: Classic (v1)
 
-  - type: checkboxes
-    id: platforms
+  - type: markdown
     attributes:
-      label: Platform
-      description: Tick every platform the paths below cover.
-      options:
-        - label: Windows
-        - label: macOS
-        - label: Linux
+      value: |
+        **Log paths.** One per line, in the box for its platform. To say what a
+        path holds, follow it with ` | ` and a few words. Leave a box empty if
+        the app does not run there. At least one path is needed.
 
   - type: textarea
-    id: paths
+    id: windows
     attributes:
-      label: Log path(s)
-      description: One per line. Include what the file is, and which platform it belongs to if you ticked more than one.
+      label: Windows log paths
       render: text
       placeholder: |
-        Windows · Session logs · %APPDATA%\Code\logs\
-        macOS   · Session logs · ~/Library/Application Support/Code/logs/
-        Linux   · Session logs · ~/.config/Code/logs/
-    validations:
-      required: true
+        %APPDATA%\Code\logs\ | Session logs
+
+  - type: textarea
+    id: macos
+    attributes:
+      label: macOS log paths
+      render: text
+      placeholder: |
+        ~/Library/Application Support/Code/logs/ | Session logs
+
+  - type: textarea
+    id: linux
+    attributes:
+      label: Linux log paths
+      render: text
+      placeholder: |
+        ~/.config/Code/logs/ | Session logs
 
   - type: dropdown
     id: installer
