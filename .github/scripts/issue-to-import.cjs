@@ -4,6 +4,12 @@
 
 const MARKER = "<!-- import-file -->";
 const PLATFORMS = { windows: "Windows log paths", macos: "macOS log paths", linux: "Linux log paths" };
+/** The installer types each platform ships. Architectures go on every platform's paths. */
+const INSTALLERS = {
+  windows: ["msi", "exe", "msix", "appx"],
+  macos: ["pkg", "dmg", "mas"],
+  linux: ["deb", "rpm", "snap", "flatpak", "appimage"],
+};
 
 /** The form's answers by label. GitHub renders each one as "### Label", then the answer. */
 function answers(body) {
@@ -22,15 +28,14 @@ function build(body) {
   const one = (label) => (a[label] ?? "").trim();
   const sure = (x) => x && x !== "Not sure";
 
-  const types = [
-    ...one("Installer type").split(","),
-    ...[...one("Architecture").matchAll(/^- \[x\] (.+)$/gim)].map((m) => m[1]),
-  ].map((t) => t.trim()).filter(sure);
+  const installers = one("Installer type").split(",").map((t) => t.trim().toLowerCase());
+  const architectures = [...one("Architecture").matchAll(/^- \[x\] (.+)$/gim)].map((m) => m[1].trim()).filter(sure);
   const scope = sure(one("Scope")) ? one("Scope") : undefined;
   const variant = one("Variant") || undefined;
 
   const logs = [];
   for (const [os, label] of Object.entries(PLATFORMS)) {
+    const types = [...installers.filter((t) => INSTALLERS[os].includes(t)), ...architectures];
     for (const line of one(label).split("\n")) {
       // The last " | " - a path can hold a bare "|", as in com.microsoft.<Word|Excel>.
       const cut = line.lastIndexOf(" | ");
@@ -94,7 +99,7 @@ if (require.main === module) {
     "### Windows log paths", "", "```text", "%APPDATA%\\Code\\logs\\ | Session logs", "", "```", "",
     "### macOS log paths", "", "```text", "~/Library/Containers/com.microsoft.<Word|Excel>/Logs/", "```", "",
     "### Linux log paths", "", "_No response_", "",
-    "### Installer type", "", "msi, Not sure", "",
+    "### Installer type", "", "msi, dmg, Not sure", "",
     "### Architecture", "", "- [X] x64", "- [ ] arm64", "- [ ] Not sure", "",
     "### Scope", "", "per-user", "",
     "### How did you verify this?", "", "My machine, and https://code.visualstudio.com/docs.", "",
@@ -102,7 +107,6 @@ if (require.main === module) {
     "### Before you submit", "", "- [X] I have redacted hostnames, usernames, tenant identifiers and customer names.",
   ].join("\r\n");
 
-  const types = ["msi", "x64"];
   assert.deepStrictEqual(build(body).file, {
     vendors: [{
       name: "Microsoft",
@@ -111,8 +115,8 @@ if (require.main === module) {
         aliases: ["vscode", "code"],
         documentation: "https://code.visualstudio.com/docs",
         logs: [
-          { os: "windows", path: "%APPDATA%\\Code\\logs\\", what: "Session logs", types, scope: "per-user" },
-          { os: "macos", path: "~/Library/Containers/com.microsoft.<Word|Excel>/Logs/", types, scope: "per-user" },
+          { os: "windows", path: "%APPDATA%\\Code\\logs\\", what: "Session logs", types: ["msi", "x64"], scope: "per-user" },
+          { os: "macos", path: "~/Library/Containers/com.microsoft.<Word|Excel>/Logs/", types: ["dmg", "x64"], scope: "per-user" },
         ],
       }],
     }],
